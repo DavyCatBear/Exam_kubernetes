@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.fastapi.deployment.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.fastapi.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.global.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.app }}
+    spec:
+      containers:
+        - name: {{ .Values.global.app }}
+          image: {{ .Values.fastapi.deployment.image }}
+          ports:
+            - containerPort: {{ .Values.fastapi.deployment.containerPort }}
+          env:
+            - name: MYSQL_DBHOST
+              value: "{{ .Values.fastapi.deployment.env.MYSQL_DBHOST }}"
+            - name: MYSQL_DBPORT
+              value: "{{ .Values.fastapi.deployment.env.MYSQL_DBPORT }}"
+            - name: MYSQL_DBUSER
+              value: "{{ .Values.fastapi.deployment.env.MYSQL_DBUSER }}"
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.fastapi.secret.name }}
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              value: {{ .Values.fastapi.deployment.env.MYSQL_DATABASE }}
+          volumeMounts:
+            - name: {{ .Values.fastapi.deployment.volumeName }}
+              mountPath: {{ .Values.fastapi.deployment.volumeMountPath }}
+          resources:
+            limits:
+              cpu: "{{ .Values.fastapi.deployment.resources.limits.cpu }}"
+              memory: "{{ .Values.fastapi.deployment.resources.limits.memory }}"
+            requests:
+              cpu: "{{ .Values.fastapi.deployment.resources.requests.cpu }}"
+              memory: "{{ .Values.fastapi.deployment.resources.requests.memory }}"
+      volumes:
+        - name: {{ .Values.fastapi.deployment.volumeName }}
+          persistentVolumeClaim:
+            claimName: shared-pvc
+

@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.fastapi.clusterIssuer.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  acme:
+    server: {{ .Values.fastapi.clusterIssuer.server }}
+    email: {{ .Values.fastapi.clusterIssuer.email }}
+    privateKeySecretRef:
+      name: {{ .Values.fastapi.clusterIssuer.privateKeySecretRef }}
+    solvers:
+    - http01:
+        ingress:
+          class: traefik
+

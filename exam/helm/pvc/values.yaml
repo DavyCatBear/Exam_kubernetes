@@ -1,0 +1,7 @@
+global:
+  namespace: helm
+
+pvc:
+  name: shared-pvc
+  accessMode: ReadWriteOnce
+  size: 10Gi

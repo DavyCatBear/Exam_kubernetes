@@ -1,0 +1,45 @@
+global:
+  namespace: helm
+  app: fastapi
+
+fastapi:
+  deployment:
+    name: fastapi-deployment
+    replicas: 3
+    image: 127.0.0.1:5000/fastapi-app:latest
+    containerPort: 8000
+    env:
+      MYSQL_DBHOST: mysql-service
+      MYSQL_DBPORT: 3306
+      MYSQL_DBUSER: root
+      MYSQL_DATABASE: storedb
+    resources:
+      limits:
+        cpu: "0.5"
+        memory: "512Mi"
+      requests:
+        cpu: "0.2"
+        memory: "256Mi"
+    volumeName: shared-storage
+    volumeMountPath: /var/log/app
+  secret:
+    name: fastapi-secrets
+    mysqlRootPassword: ZGF0YXNjaWVudGVzdA==
+  service:
+    name: fastapi-service
+    port: 80
+    targetPort: 8000
+  ingress:
+    name: fastapi-ingress
+    host: fastapi.davy-data.cloudns.ph
+    secretName: fastapi-tls
+  clusterIssuer:
+    name: letsencrypt-prod
+    email: davy.gerard@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef: letsencrypt-prod
+  hpa:
+    name: fastapi-hpa
+    minReplicas: 3
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70

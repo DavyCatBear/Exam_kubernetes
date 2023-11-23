@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.mysql.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  serviceName: {{ .Values.mysql.serviceName }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.mysql.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mysql.name }}
+    spec:
+      containers:
+        - name: {{ .Values.mysql.name }}
+          image: {{ .Values.mysql.image }}
+          ports:
+            - containerPort: {{ .Values.mysql.port }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mysql.rootPasswordSecret }}
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mysql.database }}
+          volumeMounts:
+            - name: {{ .Values.volumes.name }}
+              mountPath: {{ .Values.volumes.mountPath }}
+      volumes:
+        - name: {{ .Values.volumes.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.volumes.pvcName }}
+

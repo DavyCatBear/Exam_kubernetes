@@ -1,0 +1,17 @@
+global:
+  namespace: helm
+
+mysql:
+  image: mysql
+  port: 3306
+  database: storedb
+  rootPasswordSecret: mysql-secrets
+  serviceName: mysql-service
+
+secrets:
+  mysqlPasswordRoot: ZGF0YXNjaWVudGVzdA==
+
+volumes:
+  name: shared-storage
+  mountPath: /var/lib/mysql
+  pvcName: shared-pvc

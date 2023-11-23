@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pvc.name }}
+  namespace: {{ .Values.global.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+spec:
+  accessModes:
+    - {{ .Values.pvc.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}
+

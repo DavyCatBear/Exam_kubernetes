@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-deployment
+  namespace: standard
+  labels:
+    app: fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+      - name: fastapi
+        image: localhost:5000/fastapi-image:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MYSQL_DBHOST
+          value: "mysql-service"
+        - name: MYSQL_DBPORT
+          value: "3306"
+        - name: MYSQL_DBUSER
+          value: "root"
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: MYSQL_DATABASE
+          value: storedb
+
